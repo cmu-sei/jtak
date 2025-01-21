@@ -5,7 +5,7 @@
 import abc
 import asyncio
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, List
 from urllib.parse import urlparse
 from xml.etree.ElementTree import Element as XmlElement
@@ -74,7 +74,7 @@ class TakClient:
 
         await self.runner
 
-    def close(self):
+    def close(self, sig=None, frame=None):
         """graceful shutdown"""
 
         self.closing = True
@@ -262,7 +262,7 @@ class TakClient:
 
             # convert cot to internal objects
             cot = msg.cotEvent
-            if cot.type == "b-t-f" and cot.uid.startswith("GeoChat"):
+            if cot.type == "b-t-f" and cot.uid.startswith('GeoChat'):
                 model = chat_detail(self.me.uid, cot)
             else:
                 model = await self._inbound_handler(cot)

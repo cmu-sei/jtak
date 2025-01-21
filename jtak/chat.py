@@ -56,7 +56,7 @@ def chat_detail(me: str, cot: CotEvent|ET.Element) -> GeoChat:
         room_path = members[-1].room_uid
         room_name = members[-1].room_name
     elif chat.attrib["id"] == me:
-        room_path = f"/{parent}/{group.attrib["uid0"]}"
+        room_path = f"/{parent}/{group.attrib['uid0']}"
         room_name = chat.attrib["senderCallsign"]
     else:
         room_path = f"/{parent}/{chat.attrib['id']}"

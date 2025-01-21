@@ -8,15 +8,12 @@ You will likely want to make your own.
 import asyncio
 import logging
 import signal
+import sys
 from jtak import TakClient, ClientConf, UserConf
 
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
-def tak_shutdown(client: TakClient):
-    """graceful shutdown"""
-    client.close()
 
 async def tak_runner():
     """"Create and run a TakClient"""
@@ -33,8 +30,11 @@ async def tak_runner():
 
     client = await TakClient.create(conf)
 
-    loop = asyncio.get_event_loop()
-    loop.add_signal_handler(signal.SIGINT, tak_shutdown, client)
+    if sys.platform in ["win32"]:
+        signal.signal(signal.SIGINT, client.close)
+    else:
+        loop = asyncio.get_event_loop()
+        loop.add_signal_handler(signal.SIGINT, client.close)
 
     await client.run()
 

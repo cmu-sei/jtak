@@ -88,7 +88,7 @@ hae        | 0.0             | initial altitude
 ### WorkerConf
 Field     | Default | Notes
 -----     | ------- | -----
-url       | ""      | scheme://host:port
+url       | ""      | scheme://host:port (where scheme is "udp", "tcp", "tls")
 enabled   | True    | ignore if False
 legacy    | False   | force tak proto 0 (legacy)
 username  | ""      | tak server creds
