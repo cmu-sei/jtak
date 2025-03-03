@@ -7,8 +7,8 @@ import asyncio
 import logging
 import random
 from typing import List
-from jtak.takproto import MAX_PROTO_VERSION
-from jtak.workers.conf import WorkerContext
+from ..takproto import MAX_PROTO_VERSION
+from ..workers.conf import WorkerContext
 
 
 logger = logging.getLogger(__name__)
@@ -109,7 +109,7 @@ class TakWorker:
             if not msg:
                 continue
 
-            if msg.cotEvent.uid == self.ctx.uid or msg.takControl.contactUid == self.ctx.uid:
+            if msg.cotEvent.uid == self.ctx.uid or (msg.takControl.contactUid and msg.takControl.contactUid == self.ctx.uid):
                 continue
 
             logger.info(f"<--RX {self.ctx.url} {msg.cotEvent.uid} {msg.cotEvent.detail.group.name} {msg.cotEvent.detail.contact.callsign}")

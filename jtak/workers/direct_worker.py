@@ -11,10 +11,10 @@ worker wasn't created with a remote endpoint.
 import asyncio
 import logging
 from urllib.parse import urlparse
-from jtak.takproto import serialize, deserialize
-from jtak.workers.conf import TAG_BCAST, WorkerConf, WorkerContext
-from jtak.workers.io.net import resolve_local_ip
-from jtak.workers.tak_worker import TakWorker
+from ..takproto import serialize, deserialize
+from .conf import TAG_BCAST, WorkerConf, WorkerContext
+from .io.net import resolve_local_ip
+from .tak_worker import TakWorker
 
 
 logger = logging.getLogger(__name__)

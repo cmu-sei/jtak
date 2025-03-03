@@ -9,8 +9,8 @@ import delimited_protobuf as dpb
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, NamedTuple, Set, Tuple
-from jtak.chat import ChatGroupMember, chat_group_members
-from jtak.takproto import TakMessage, CotEvent
+from .chat import ChatGroupMember, chat_group_members
+from .takproto import TakMessage, CotEvent
 
 
 logger = logging.getLogger(__name__)

@@ -14,11 +14,11 @@ import asyncio
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, NamedTuple
-from jtak.takproto import deserialize, serialize, serialize_takc, MAX_PROTO_VERSION, TakMessage
-from jtak.workers.conf import TAG_BCAST, TAG_NOBCAST, WorkerContext, WorkerConf
-from jtak.workers.io.udp import get_io
-from jtak.workers.io.net import resolve_local_ip
-from jtak.workers.tak_worker import TakWorker
+from ..takproto import deserialize, serialize, serialize_takc, MAX_PROTO_VERSION, TakMessage
+from .conf import TAG_BCAST, TAG_NOBCAST, WorkerContext, WorkerConf
+from .io.udp import get_io
+from .io.net import resolve_local_ip
+from .tak_worker import TakWorker
 
 
 logger = logging.getLogger(__name__)

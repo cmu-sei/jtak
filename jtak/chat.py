@@ -4,7 +4,7 @@
 """Functions and models for GeoChat handling"""
 import xml.etree.ElementTree as ET
 from typing import List, NamedTuple, Tuple
-from jtak.takproto import CotEvent
+from .takproto import CotEvent
 
 class GeoChat(NamedTuple):
     room_path: str

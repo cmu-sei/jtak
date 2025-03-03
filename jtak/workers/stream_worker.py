@@ -7,15 +7,15 @@ import logging
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from typing import Tuple
-from jtak.cot import cot_base
-from jtak.takproto import (
+from ..cot import cot_base
+from ..takproto import (
     MAX_PROTO_VERSION, TakMessage, CotEvent, serialize,
     deserialize_stream_header, serialize_stream_header,
     convert_to_protobuf
 )
-from jtak.workers.conf import TAG_BCAST, TAG_MARTI, WorkerContext, WorkerConf
-from jtak.workers.io.tcp import get_io
-from jtak.workers.tak_worker import TakWorker
+from .conf import TAG_BCAST, TAG_MARTI, WorkerContext, WorkerConf
+from .io.tcp import get_io
+from .tak_worker import TakWorker
 
 logger = logging.getLogger(__name__)
 

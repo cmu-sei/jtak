@@ -10,7 +10,7 @@ import struct
 from asyncio_dgram.aio import DatagramServer, DatagramClient
 from typing import NamedTuple, Tuple
 from urllib.parse import urlparse
-from jtak.workers.io.net import NetworkInterface, is_multicast_ip
+from .net import NetworkInterface, is_multicast_ip
 
 
 logger = logging.getLogger(__name__)

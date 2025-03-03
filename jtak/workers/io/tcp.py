@@ -21,7 +21,7 @@ class TLSConf(NamedTuple):
     p12_password: str = "atakatak"
     skip_verification: bool = False
 
-async def get_io(url: str, tls: TLSConf) -> Tuple[
+async def get_io(url: str, tls: TLSConf = TLSConf()) -> Tuple[
     asyncio.StreamReader,
     asyncio.StreamWriter
 ]:

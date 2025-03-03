@@ -5,7 +5,7 @@
 from asyncio import StreamReader, StreamWriter
 from asyncio_dgram.aio import DatagramClient, DatagramServer
 from typing import List, NamedTuple
-from jtak.workers.io.tcp import TLSConf
+from .io.tcp import TLSConf
 
 
 TAG_BCAST = "bcast"

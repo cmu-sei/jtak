@@ -8,8 +8,8 @@ from google.protobuf.internal.decoder import _DecodeVarint
 from google.protobuf.internal.encoder import _EncodeVarint
 from io import BytesIO
 from typing import List, Optional, Tuple, Type
-from jtak.takproto import MAX_PROTO_VERSION
-from jtak.takproto.messages import TakMessage
+from . import MAX_PROTO_VERSION
+from .messages import TakMessage
 
 
 FMT_TIME = "%Y-%m-%dT%H:%M:%SZ"

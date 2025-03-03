@@ -6,10 +6,10 @@ import platform
 import uuid
 import xml.etree.ElementTree as ET
 from typing import Dict, List
-from jtak.__version__ import __version__ as jtak_version
-from jtak.chat import ChatGroupMember, chat_room_detail
-from jtak.takproto import cot_time
-from jtak.user import TakUser
+from .__version__ import __version__ as jtak_version
+from .chat import ChatGroupMember, chat_room_detail
+from .takproto import cot_time
+from .user import TakUser
 
 TAKV = {
     "device": platform.node(),
