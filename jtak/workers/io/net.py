@@ -2,8 +2,8 @@
 # Licensed under a MIT (SEI)-style license, please see LICENSE.md or contact permission@sei.cmu.edu for full terms.
 
 """Functions to query local network settings"""
-import ifaddr
 import ipaddress
+import psutil
 from typing import NamedTuple
 
 class NetworkInterface(NamedTuple):
@@ -35,6 +35,10 @@ def to_broadcast_ip(ip: str, prefix: int) -> str:
     iface = ipaddress.ip_interface(f"{ip}/{prefix}")
     return str(iface.network.broadcast_address)
 
+def netmask_prefix(mask: str) -> int:
+    net = ipaddress.ip_network(f"0.0.0.0/{mask}")
+    return net.prefixlen
+
 def resolve_local_ip(target: str = None) -> NetworkInterface:
     """
     Heuristically determine local ip for multicast group registration.
@@ -55,31 +59,30 @@ def resolve_local_ip(target: str = None) -> NetworkInterface:
     nic = (target or None) if not valid else None
 
     # get options
-    nics = {a.nice_name: a for a in ifaddr.get_adapters()}
-    ips = [x for k in nics for x in nics[k].ips if type(x.ip) is str]
+    stats = psutil.net_if_stats()
+    nics = psutil.net_if_addrs()
+    found = [
+        NetworkInterface(a.address, k, a.broadcast, netmask_prefix(a.netmask))
+        for k, aa in nics.items() if stats[k].isup
+        for a in aa if a.family==2
+    ]
 
     # if specified ip exists, use it
     try:
-        match = next((x for x in ips if x.ip == ip))
-        bcast = to_broadcast_ip(match.ip, match.network_prefix)
-        return NetworkInterface(match.ip, match.nice_name, bcast, match.network_prefix)
+        return next((x for x in found if x.ip == ip))
     except:
         pass
 
     # if specified adapter exists, use it
     try:
-        match = next((x for x in ips if nic in x.nice_name))
-        bcast = to_broadcast_ip(match.ip, match.network_prefix)
-        return NetworkInterface(match.ip, match.nice_name, bcast, match.network_prefix)
+        return next((x for x in found if nic == x.adapter))
     except:
         pass
 
-    # trying grabbing wi-fi then ethernet
+    # trying grabbing wi-fi, ethernet, or loopback
     for t in ["w", "e", "l"]:
         try:
-            match = next((x for x in ips if x.nice_name.lower().startswith(t)))
-            bcast = to_broadcast_ip(match.ip, match.network_prefix)
-            return NetworkInterface(match.ip, match.nice_name, bcast, match.network_prefix)
+            return next((x for x in found if x.adapter.lower().startswith(t)))
         except:
             pass
 

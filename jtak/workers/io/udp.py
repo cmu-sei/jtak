@@ -33,18 +33,19 @@ async def get_io(
     if addr.ip == iface.ip:
         mode = "r"
 
-    writer = await udp_connect(addr, multicast_ttl) if "w" in mode else None
+    writer = await udp_connect(addr, iface, multicast_ttl) if "w" in mode else None
     reader = await udp_bind(addr, iface) if "r" in mode else None
     return reader, writer
 
-async def udp_connect(addr: SocketAddress, multicast_ttl: int = 1) -> DatagramClient:
+async def udp_connect(addr: SocketAddress, multicast_if: NetworkInterface, multicast_ttl: int = 1) -> DatagramClient:
     """connect udp socket to remote endpoint"""
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    sock.setsockopt(
-        socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, struct.pack("b", multicast_ttl)
-    )
+    if is_multicast_ip(addr.ip):
+        ip = int(ipaddress.IPv4Address(multicast_if.ip))
+        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, struct.pack("b", multicast_ttl))
+        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, struct.pack("!L", ip))
     sock.connect(addr)
     writer = await asyncio_dgram.from_socket(sock)
     logger.debug(f"[socket] {writer.sockname} -> {writer.peername}")

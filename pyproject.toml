@@ -25,8 +25,8 @@ dependencies = [
   "asyncio_dgram",
   "cryptography",
   "delimited-protobuf",
-  "ifaddr",
-  "protobuf>=5.29.0"
+  "protobuf>=5.29.0",
+  "psutil"
 ]
 
 requires-python = ">=3.10,<4"
