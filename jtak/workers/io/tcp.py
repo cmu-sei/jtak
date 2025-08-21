@@ -77,7 +77,7 @@ def pkcs12_to_sslctx(conf: TLSConf) -> ssl.SSLContext:
     key_path.unlink()
 
     if certs and len(certs):
-        cadata = certs[0].public_bytes(serialization.Encoding.PEM).decode()
+        cadata = certs[-1].public_bytes(serialization.Encoding.PEM).decode()
         ctx.load_verify_locations(cadata=cadata)
     else:
         logger.warning("PKCS12 file missing CA file. Assuming CA is already trusted on host.")

@@ -267,10 +267,14 @@ class TakClient:
             else:
                 model = await self._inbound_handler(cot)
 
-            if model:
-                if self.upq.full():
-                    self.upq.get_nowait()
-                self.upq.put_nowait(model)
+            self._insert_inbound(model)
+
+    def _insert_inbound(self, model):
+        """insert model into inbound queue"""
+        if model:
+            if self.upq.full():
+                self.upq.get_nowait()
+            self.upq.put_nowait(model)
 
     async def _sa_loop(self):
         """loop for sending sa cot"""
