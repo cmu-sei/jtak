@@ -29,7 +29,7 @@ class ClientConf():
 class TakClient:
 
     @classmethod
-    async def create(cls, cc: ClientConf, data_path: str = "."):
+    async def create(cls, cc: ClientConf, data_path: str = ".", extra_conf: Any = None):
         """create instance of TakClient"""
 
         worker_conf = cc.workers or [
@@ -43,10 +43,10 @@ class TakClient:
             for wc in worker_conf if wc.enabled
         ]
 
-        return cls(cc, workers, data_path)
+        return cls(cc, workers, data_path, extra_conf)
 
     """State and utilities for a TAK session"""
-    def __init__(self, conf: ClientConf, workers: List[TakWorker], data_path: str = "."):
+    def __init__(self, conf: ClientConf, workers: List[TakWorker], data_path: str = ".", extra_conf: Any = None):
         """initialize client"""
 
         self.conf = conf
