@@ -7,8 +7,8 @@ import asyncio
 import logging
 import random
 from typing import List
+from .conf import WorkerContext
 from ..takproto import MAX_PROTO_VERSION
-from ..workers.conf import WorkerContext
 
 
 logger = logging.getLogger(__name__)

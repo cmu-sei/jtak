@@ -25,7 +25,7 @@ dependencies = [
   "asyncio_dgram",
   "cryptography",
   "delimited-protobuf",
-  "protobuf>=5.29.0",
+  "protobuf",
   "psutil"
 ]
 

@@ -4,6 +4,7 @@
 """Base TakClient"""
 import abc
 import asyncio
+import copy
 import logging
 from dataclasses import dataclass
 from typing import Any, List
@@ -29,7 +30,7 @@ class ClientConf():
 class TakClient:
 
     @classmethod
-    async def create(cls, cc: ClientConf, data_path: str = "."):
+    async def create(cls, cc: ClientConf, data_path: str = ".", extra_conf: Any = None):
         """create instance of TakClient"""
 
         worker_conf = cc.workers or [
@@ -43,10 +44,10 @@ class TakClient:
             for wc in worker_conf if wc.enabled
         ]
 
-        return cls(cc, workers, data_path)
+        return cls(cc, workers, data_path, extra_conf)
 
     """State and utilities for a TAK session"""
-    def __init__(self, conf: ClientConf, workers: List[TakWorker], data_path: str = "."):
+    def __init__(self, conf: ClientConf, workers: List[TakWorker], data_path: str = ".", extra_conf: Any = None):
         """initialize client"""
 
         self.conf = conf
@@ -140,7 +141,7 @@ class TakClient:
             ])
 
             # enqueue for stream workers
-            await self._outbound_stream(cot)
+            await self._outbound_stream_all(cot)
 
         else:
 
@@ -155,12 +156,14 @@ class TakClient:
 
         if not to:
             await self._outbound_broadcast(cot, tag)
+            await self._outbound_stream_all(cot)
             return
 
         # resolve recipients
         members = self.state.find_members(to)
         uids = [m.uid for m in members]
         direct, stream, _ = self.state.find_contacts(uids)
+        logger.debug('outbound recipients direct [%s] stream [%s]', direct, stream)
 
         # enqueue direct contacts
         await self._outbound_direct(cot, direct)
@@ -171,23 +174,25 @@ class TakClient:
     async def _outbound_stream(self, cot: TakMessage|XmlElement, contacts: List[StateContact] = []):
         """enqueue for stream endpoints; if no contact enqueue for all stream endpoints"""
 
-        if len(contacts):
+        # enqueue for specified stream endpoints
+        urls = set(c.local_ep for c in contacts)
+        for url in urls:
+            cot = copy.deepcopy(cot)
+            cot_add_marti(cot, [s.callsign for s in contacts if s.local_ep == url])
+            worker = self._find_worker_by_url(url)
+            if worker:
+                await worker.send_cot(cot)
 
-            # enqueue for specified stream endpoints
-            urls = set(c.local_ep for c in contacts)
-            for url in urls:
-                cot_add_marti(cot, [s.callsign for s in contacts if s.local_ep == url])
-                worker = self._find_worker_by_url(url)
-                if worker:
-                    await worker.send_cot(cot)
+    async def _outbound_stream_all(self, cot: TakMessage|XmlElement):
 
-        else:
-
-            # enqueue for all stream endpoints
+        # enqueue for all stream workers
+        stream_workers = [w for w in self.workers if w.has_tag(TAG_MARTI)]
+        if stream_workers:
+            cot = copy.deepcopy(cot)
             cot_add_marti(cot, [self.me.contact.callsign])
             await asyncio.gather(*[
                 w.send_cot(cot)
-                for w in self.workers if w.has_tag(TAG_MARTI)
+                for w in stream_workers
             ])
 
     async def _outbound_direct(self, cot: TakMessage|XmlElement, contacts: List[StateContact]):
@@ -219,11 +224,10 @@ class TakClient:
 
     async def _outbound_broadcast(self, cot: TakMessage|XmlElement, tags: List[str] = []):
 
-        if not len(tags):
+        if not tags:
             tags = [TAG_BCAST]
 
-        logger.debug(f"Enqueue cot for tagged workers '{' '.join(tags)}'")
-
+        # enqueue for all udp broadcast workers
         await asyncio.gather(*[
             w.send_cot(cot)
             for w in self.workers
@@ -267,10 +271,14 @@ class TakClient:
             else:
                 model = await self._inbound_handler(cot)
 
-            if model:
-                if self.upq.full():
-                    self.upq.get_nowait()
-                self.upq.put_nowait(model)
+            self._insert_inbound(model)
+
+    def _insert_inbound(self, model):
+        """insert model into inbound queue"""
+        if model:
+            if self.upq.full():
+                self.upq.get_nowait()
+            self.upq.put_nowait(model)
 
     async def _sa_loop(self):
         """loop for sending sa cot"""

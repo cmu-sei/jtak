@@ -1,12 +1,13 @@
-from . import contact_pb2 as _contact_pb2
-from . import group_pb2 as _group_pb2
-from . import precisionlocation_pb2 as _precisionlocation_pb2
-from . import status_pb2 as _status_pb2
-from . import takv_pb2 as _takv_pb2
-from . import track_pb2 as _track_pb2
+import contact_pb2 as _contact_pb2
+import group_pb2 as _group_pb2
+import precisionlocation_pb2 as _precisionlocation_pb2
+import status_pb2 as _status_pb2
+import takv_pb2 as _takv_pb2
+import track_pb2 as _track_pb2
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from collections.abc import Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
